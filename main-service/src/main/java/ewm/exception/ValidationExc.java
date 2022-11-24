@@ -1,8 +1,9 @@
 package ewm.exception;
 
-public class ValidationExc extends RuntimeException {
+import ewm.abstraction.EwmExc;
 
-    public ValidationExc(String message) {
-        super(message);
+public class ValidationExc extends EwmExc {
+    public ValidationExc(String message, String reason) {
+        super(message, reason);
     }
 }

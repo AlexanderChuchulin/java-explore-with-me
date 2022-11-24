@@ -1,35 +1,34 @@
 package ewm.abstraction;
 
+import ewm.other.DtoType;
+import ewm.other.IdName;
+
 import java.util.List;
+import java.util.Map;
 
 public interface EwmService<T extends EntityDto> {
     /**
     Метод создаёт сущность
     */
-    T createEntityService(T dto);
+    T createEntityService(T dto, boolean isHaveDto, Long... params);
 
     /**
-     Метод возвращает одну сущность по заданному id
+     Метод возвращает одну сущность по заданному ID
      */
-    T getEntityByIdService(long entityId);
-
-    /**
-     Метод возвращает список сущностей по заданным id
-     */
-    List<T> getEntityByIdsService(List<Long> entityIds);
+    T getEntityByIdService(Map<IdName, Long> entityIdMap, DtoType dtoType, boolean isAdmin);
 
     /**
      Метод возвращает список сущностей
      */
-    List<T> getEntityService(int from, int size);
+    List<T> getEntityService(Long ownerId, List<Long> entityIds, int from, int size, DtoType dtoType, Boolean... booleanParam);
 
     /**
-    Метод обновляет сущность
+    Метод обновляет сущность по ID
     */
-    T updateEntityService(long entityId, T dto);
+    T updateEntityService(Map<IdName, Long> entityIdMap, T dto, boolean isHaveDto, boolean isAdmin);
 
     /**
-    Метод удаляет все сущности или одну сущность по заданному id
+    Метод удаляет все сущности или одну сущность по заданному ID
     */
-    void deleteEntityByIdService(long entityId);
+    void deleteEntityByIdService(Map<IdName, Long> entityIdMap);
 }
