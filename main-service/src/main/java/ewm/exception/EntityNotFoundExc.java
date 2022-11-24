@@ -1,8 +1,10 @@
 package ewm.exception;
 
-public class EntityNotFoundExc extends RuntimeException {
+import ewm.abstraction.EwmExc;
 
-    public EntityNotFoundExc(String message) {
-        super(message);
+public class EntityNotFoundExc extends EwmExc {
+
+    public EntityNotFoundExc(String message, String reason) {
+        super(message, reason);
     }
 }

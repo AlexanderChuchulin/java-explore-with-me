@@ -1,6 +1,5 @@
 package ewm.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import ewm.abstraction.EwmEntity;
 import lombok.*;
 
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class User extends EwmEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

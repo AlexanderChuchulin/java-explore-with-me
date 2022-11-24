@@ -1,8 +1,10 @@
 package ewm.exception;
 
-public class MainPropDuplicateExc extends RuntimeException {
+import ewm.abstraction.EwmExc;
 
-    public MainPropDuplicateExc(String message) {
-        super(message);
+public class MainPropDuplicateExc extends EwmExc {
+
+    public MainPropDuplicateExc(String message, String reason) {
+        super(message, reason);
     }
 }
