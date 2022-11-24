@@ -18,7 +18,8 @@ public class UserDto extends EntityDto {
     @JsonProperty("name")
     private String userName;
 
-    UserDto getUserDtoNewSchema() {
-        return null;
+    @Override
+    public Long getId() {
+        return getUserId();
     }
 }

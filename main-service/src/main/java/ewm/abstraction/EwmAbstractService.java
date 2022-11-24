@@ -1,76 +1,133 @@
 package ewm.abstraction;
 
 import ewm.exception.EntityNotFoundExc;
+import ewm.exception.ValidationExc;
+import ewm.other.DtoType;
+import ewm.other.IdName;
 import ewm.other.OtherUtils;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.BeanUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ewm.other.IdName.GENERAL_ID;
 
 @Slf4j
 public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntity> implements EwmService<T> {
     protected String name;
-    protected JpaRepository<V, Long> jpaRepository;
+    public EwmJpaRepository<V> jpaRepository;
     protected EntityMapper<T, V> mapper;
 
-
     @Override
-    public T createEntityService(T dto) {
-        validateEntityService(mapper.dtoToEntity(dto), false, String.format("%s not created.", name));
-        log.info("{} created {}", name, dto);
-        return mapper.entityToDto(jpaRepository.save(mapper.dtoToEntity(dto)));
+    public T createEntityService(T dto, boolean isHaveDto, Long... params) {
+        String conclusion = String.format("%s not created.", name);
+
+        if (isHaveDto) {
+            checkDto(dto, conclusion);
+        }
+
+        validateEntityService(dto, false, false, conclusion, params);
+        log.info("Create {}", name);
+        return mapper.entityToDto(jpaRepository.save(mapper.dtoToEntity(dto, params)));
     }
 
     @Override
-    public T getEntityByIdService(long entityId) {
-        entityExistCheckService(entityId, String.format("Get %s by ID %s.", name, entityId));
-        log.info("Get {} by ID {}", name, entityId);
-        return mapper.entityToDto(jpaRepository.getReferenceById(entityId));
+    public T getEntityByIdService(Map<IdName, Long> entityIdMap, DtoType dtoType, boolean isAdmin) {
+        String action = String.format("%s get %s by ID %s", isAdmin ? "Admin" : "User", name, entityIdMap.get(GENERAL_ID));
+
+        entityExistCheckService(entityIdMap, isAdmin, action);
+        log.info(action);
+        return mapper.entityToDto(jpaRepository.getReferenceById(entityIdMap.get(GENERAL_ID)));
     }
 
     @Override
-    public List<T> getEntityByIdsService(List<Long> entityIds) {
-        log.info("Get {} by IDs {}", name, entityIds);
-        return jpaRepository.findAllById(entityIds).stream()
-                .map(mapper::entityToDto)
+    public List<T> getEntityService(Long ownerId, List<Long> entityIds, int from, int size, DtoType dtoType, Boolean... booleanParam) {
+        if (entityIds == null | (ownerId == null & entityIds == null)) {
+            log.info("Get {}s from {} size {}", name, from, size);
+        } else {
+            log.info("Get {}s with current or other entity ids {}", name, entityIds);
+        }
+        return jpaRepository.ewmFindAll(ownerId, entityIds, OtherUtils.pageableCreate(from, size), booleanParam).stream()
+                .map(entity -> mapper.entityToDto(entity, dtoType))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<T> getEntityService(int from, int size) {
-        log.info("Get {}s from {} size {}", name, from, size);
-        return jpaRepository.findAll(OtherUtils
-                .pageableCreate(from, size)).stream()
-                .map(mapper::entityToDto)
-                .collect(Collectors.toList());
+    public T updateEntityService(Map<IdName, Long> entityIdMap, T dto, boolean isHaveDto, boolean isAdmin) {
+        String action = String.format("%s update %s by ID %s", isAdmin ? "Admin" : "User", name, entityIdMap.get(GENERAL_ID));
+        String conclusion = String.format("%s not updated", name);
+
+        if (isHaveDto) {
+            checkDto(dto, conclusion);
+        }
+
+        if (!entityIdMap.containsKey(GENERAL_ID)) {
+            entityIdMap.put(GENERAL_ID, dto.getId());
+        }
+
+        entityExistCheckService(entityIdMap, isAdmin, action);
+
+        V updatingEntity = mapper.dtoToEntity(dto);
+
+        BeanUtils.copyProperties(jpaRepository
+                .getReferenceById(entityIdMap.get(GENERAL_ID)), updatingEntity, OtherUtils.getNotNullPropertyNames(updatingEntity));
+
+        validateEntityService(mapper.entityToDto(updatingEntity), true, true, conclusion);
+        log.info(action);
+        return mapper.entityToDto(jpaRepository.save(updatingEntity));
     }
 
     @Override
-    public T updateEntityService(long entityId, T entity) {
-        return null;
-    }
+    public void deleteEntityByIdService(Map<IdName, Long> entityIdMap) {
+        String action = String.format("Delete %s by ID %s", name, entityIdMap.get(GENERAL_ID));
 
-    @Override
-    public void deleteEntityByIdService(long entityId) {
-        entityExistCheckService(entityId, String.format("Delete %s by ID %s.", name, entityId));
-        jpaRepository.deleteById(entityId);
-        log.info("Delete {} by ID {}", name, entityId);
+        entityExistCheckService(entityIdMap, false, action);
+        jpaRepository.deleteById(entityIdMap.get(GENERAL_ID));
+        log.info(action);
     }
 
     /**
      * Метод проверяет существование сущности по id
      */
-    public void entityExistCheckService(Long entityId, String action) {
-        if (!jpaRepository.existsById(entityId)) {
-            throw new EntityNotFoundExc(String.format("Search entity error. %s aborted", action));
+    public void entityExistCheckService(Map<IdName, Long> entityIdMap, boolean isAdmin, String action) {
+        String message = String.format("%s aborted. ", action);
+        String reason = String.format("Search %s error.", name);
+
+        if (!jpaRepository.ewmExistsById(entityIdMap, isAdmin)) {
+            log.info(message, reason);
+            throw new EntityNotFoundExc(String.format(message),reason);
         }
     }
 
     /**
-     * Метод проводит валидацию сущности
+     * Метод проверяет Dto на null или являются ли все поля null
      */
-    public abstract void validateEntityService(V entity, Boolean isUpdate, String conclusion);
+    @SneakyThrows
+    public void checkDto(T dto, String conclusion) {
+        boolean isAllFieldsNull = true;
 
+        if (dto != null) {
+            for (Field f : dto.getClass().getDeclaredFields()) {
+                f.setAccessible(true);
 
+                if (f.get(dto) != null) {
+                    isAllFieldsNull = false;
+                    break;
+                }
+            }
+        }
+        if (isAllFieldsNull) {
+            throw new ValidationExc(conclusion, "Object or all object fields must not be null.");
+        }
+    }
+
+    /**
+     * Метод проводит валидацию входного Dto сущности
+     */
+    public abstract void validateEntityService(T entityDto, boolean isHaveDto, boolean isAdmin,
+                                               String conclusion, Long... params);
 }

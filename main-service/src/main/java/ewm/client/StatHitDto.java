@@ -1,9 +1,9 @@
-package ewm.statistics;
+package ewm.client;
 
-import com.fasterxml.jackson.annotation.*;
-
-import javax.validation.constraints.NotBlank;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,14 +16,11 @@ import java.time.LocalDateTime;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder(value = {"id", "app", "uri", "ip", "timestamp", "hits"})
-public class StatDto {
+public class StatHitDto {
     @JsonProperty("id")
     private Long hitId;
-    @NotBlank
     private String app;
-    @NotBlank
     private String uri;
-    @NotBlank
     private String ip;
     @JsonProperty("timestamp")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
