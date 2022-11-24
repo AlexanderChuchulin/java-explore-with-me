@@ -24,7 +24,7 @@ public class OtherUtils {
             Object srcValue = src.getPropertyValue(pd.getName());
             if (srcValue != null) notEmptyNames.add(pd.getName());
         }
-        notEmptyNames.add("userIdHeader");
+
         String[] result = new String[notEmptyNames.size()];
 
         return notEmptyNames.toArray(result);
@@ -35,13 +35,18 @@ public class OtherUtils {
      */
     public static Pageable pageableCreate(int from, int size, String... sortParam) {
         if (from < 0 || size <= 0) {
-            throw new ValidationExc("Wrong pagination parameters. Operation aborted.");
+            throw new ValidationExc("Operation aborted.", "Wrong pagination parameters.");
         }
 
         int pageNumber = (int) (Math.ceil(((double) from + 1) / size) - 1);
 
         if (sortParam.length == 1 && !sortParam[0].isBlank()) {
-            return PageRequest.of(pageNumber, size, Sort.by(sortParam[0]).descending());
+            if (sortParam[0].equalsIgnoreCase("EVENT_DATE")) {
+                return PageRequest.of(pageNumber, size, Sort.by("eventDate").ascending());
+            } else if (sortParam[0].equalsIgnoreCase("VIEWS")) {
+                return PageRequest.of(pageNumber, size, Sort.by("views").descending());
+            }
+            throw new ValidationExc("Operation aborted.", "Wrong sort parameters.");
         }
 
         return PageRequest.of(pageNumber, size);

@@ -27,27 +27,26 @@ public class UserService extends EwmAbstractService<UserDto, User> {
     }
 
     @Override
-    public void validateEntityService(User user, Boolean isUpdate, String conclusion) {
-        StringBuilder excMsg = new StringBuilder();
+    public void validateEntityService(UserDto userDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
+        StringBuilder excReason = new StringBuilder();
 
-        if (user.getUserName() == null || user.getUserName().isBlank()) {
-            user.setUserName(user.getEmail());
+        if (userDto.getUserName() == null || userDto.getUserName().isBlank()) {
+            excReason.append("User name must be specified.");
         }
 
-        // Проверка на правильность e-mail и наличие дубликатов во время создания и обновления пользователей
-        if (user.getEmail() == null || !Pattern.compile("^[A-Z\\d._%+-]+@[A-Z\\d.-]+\\.[A-Z]{2,6}$",
-                Pattern.CASE_INSENSITIVE).matcher(user.getEmail()).find()) {
-            excMsg.append("e-mail must be in the correct format. ");
-        } else if (userJpaRepository.findByEmailContainingIgnoreCase(user.getEmail()) != null) {
-            excMsg.append(String.format("User with e-mail %s is already registered. ", user.getEmail()));
+        if (userDto.getEmail() == null || !Pattern.compile("^[A-Z\\d._%+-]+@[A-Z\\d.-]+\\.[A-Z]{2,6}$",
+                Pattern.CASE_INSENSITIVE).matcher(userDto.getEmail()).find()) {
+            excReason.append("E-mail must be in the correct format. ");
+        } else if (userJpaRepository.findByEmailContainingIgnoreCase(userDto.getEmail()) != null) {
+            excReason.append(String.format("User with e-mail %s is already registered. ", userDto.getEmail()));
         }
 
-        if (excMsg.length() > 0) {
-            log.warn("User validation error. {}{}", excMsg, conclusion);
-            if (excMsg.toString().contains("User with e-mail")) {
-                throw new MainPropDuplicateExc(excMsg + conclusion);
+        if (excReason.length() > 0) {
+            log.warn("{} validation error. {}{}", name, excReason, conclusion);
+            if (excReason.toString().contains("User with e-mail")) {
+                throw new MainPropDuplicateExc(conclusion, excReason.toString());
             } else {
-                throw new ValidationExc(excMsg + conclusion);
+                throw new ValidationExc(conclusion, excReason.toString());
             }
         }
     }
