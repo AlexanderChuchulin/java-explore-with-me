@@ -38,39 +38,39 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    public UserDto createUserController(@RequestBody UserDto userDto) {
+    public UserDto createUser(@RequestBody UserDto userDto) {
         return userService.createEntityService(userDto, true);
     }
 
     @GetMapping("/users")
-    public List<UserDto> getUsersController(@RequestParam(value = "ids", required = false) List<Long> ids,
+    public List<UserDto> getUsers(@RequestParam(value = "ids", required = false) List<Long> ids,
                                             @RequestParam(value = "from", required = false, defaultValue = "0") int from,
                                             @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return userService.getEntityService(null, ids, from, size, null);
     }
 
     @DeleteMapping("users/{userId}")
-    public void deleteUserByIdController(@PathVariable long userId) {
+    public void deleteUserById(@PathVariable long userId) {
         userService.deleteEntityByIdService(Map.of(GENERAL_ID, userId));
     }
 
     @PostMapping("/categories")
-    public CategoryDto createCategoryController(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.createEntityService(categoryDto, true);
     }
 
     @PatchMapping("/categories")
-    public CategoryDto updateCategoryController(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.updateEntityService(new HashMap<>(), categoryDto, true, true);
     }
 
     @DeleteMapping("/categories/{categoryId}")
-    public void deleteCategoryByIdController(@PathVariable long categoryId) {
+    public void deleteCategoryById(@PathVariable long categoryId) {
         categoryService.deleteEntityByIdService(Map.of(GENERAL_ID, categoryId));
     }
 
     @GetMapping("/events")
-    public List<EventDto> getEventsAdminController(@RequestParam(value = "users", required = false) List<Long> usersIds,
+    public List<EventDto> getEventsByAdmin(@RequestParam(value = "users", required = false) List<Long> usersIds,
                                                    @RequestParam(value = "states", required = false) List<EventStatus> states,
                                                    @RequestParam(value = "categories", required = false) List<Long> categoryIds,
                                                    @RequestParam(value = "rangeStart", required = false, defaultValue = "0001-01-01 00:00:00") String rangeStart,
@@ -81,47 +81,47 @@ public class AdminController {
     }
 
     @PutMapping("/events/{eventId}")
-    public EventDto updateEventAdminController(@PathVariable Long eventId, @RequestBody EventDto eventDto) {
+    public EventDto updateEventByAdmin(@PathVariable Long eventId, @RequestBody EventDto eventDto) {
         return eventService.updateEntityService(Map.of(GENERAL_ID, eventId), eventDto, true, true);
     }
 
     @PatchMapping("/events/{eventId}/publish")
-    public EventDto publishEventController(@PathVariable long eventId) {
+    public EventDto publishEvent(@PathVariable long eventId) {
         return eventService.changeEventStatusService(Map.of(GENERAL_ID, eventId), PUBLISHED, true);
     }
 
     @PatchMapping("/events/{eventId}/reject")
-    public EventDto cancelEventAdminController(@PathVariable long eventId) {
+    public EventDto cancelEventByAdmin(@PathVariable long eventId) {
         return eventService.changeEventStatusService(Map.of(GENERAL_ID, eventId), CANCELED, true);
     }
 
     @PostMapping("/compilations")
-    public CompilationDto createCompilationController(@RequestBody CompilationDto compilationDto) {
+    public CompilationDto createCompilation(@RequestBody CompilationDto compilationDto) {
         return compilationService.createEntityService(compilationDto, true);
     }
 
     @PatchMapping("/compilations/{compId}/pin")
-    public void pinCompilationController(@PathVariable long compId) {
+    public void pinCompilation(@PathVariable long compId) {
         compilationService.compilationPinUpdate(compId, true);
     }
 
     @DeleteMapping("/compilations/{compId}/pin")
-    public void unPinCompilationController(@PathVariable long compId) {
+    public void unPinCompilation(@PathVariable long compId) {
         compilationService.compilationPinUpdate(compId, false);
     }
 
     @PatchMapping("/compilations/{compId}/events/{eventId}")
-    public void addEventToCompilationController(@PathVariable long compId, @PathVariable long eventId) {
+    public void addEventToCompilation(@PathVariable long compId, @PathVariable long eventId) {
         compilationService.compilationEventUpdate(compId, eventId,true);
     }
 
     @DeleteMapping("/compilations/{compId}/events/{eventId}")
-    public void removeEventFromCompilationController(@PathVariable long compId, @PathVariable long eventId) {
+    public void removeEventFromCompilation(@PathVariable long compId, @PathVariable long eventId) {
         compilationService.compilationEventUpdate(compId, eventId,false);
     }
 
     @DeleteMapping("/compilations/{compId}")
-    public void deleteCompilationController(@PathVariable long compId) {
+    public void deleteCompilation(@PathVariable long compId) {
         compilationService.deleteEntityByIdService(Map.of(GENERAL_ID, compId));
     }
 

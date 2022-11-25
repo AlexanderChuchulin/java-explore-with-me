@@ -1,5 +1,7 @@
-package ewm.statistics;
+package ewm.statistics.mapper;
 
+import ewm.statistics.dto.StatDto;
+import ewm.statistics.model.StatModel;
 import org.springframework.stereotype.Service;
 
 @Service

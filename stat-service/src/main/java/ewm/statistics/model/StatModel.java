@@ -1,4 +1,4 @@
-package ewm.statistics;
+package ewm.statistics.model;
 
 import lombok.*;
 

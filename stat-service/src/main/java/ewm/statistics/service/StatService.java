@@ -1,5 +1,9 @@
-package ewm.statistics;
+package ewm.statistics.service;
 
+import ewm.statistics.dto.StatCountDto;
+import ewm.statistics.dto.StatDto;
+import ewm.statistics.mapper.StatMapper;
+import ewm.statistics.repository.StatJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

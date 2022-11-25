@@ -1,4 +1,4 @@
-package ewm.statistics;
+package ewm.statistics.dto;
 
 import lombok.*;
 

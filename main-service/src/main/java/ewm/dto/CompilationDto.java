@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = false)
 public class CompilationDto extends EntityDto {
     @JsonProperty("id")
     private Long compilationId;

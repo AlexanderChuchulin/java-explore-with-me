@@ -1,5 +1,8 @@
-package ewm.statistics;
+package ewm.statistics.controller;
 
+import ewm.statistics.dto.StatCountDto;
+import ewm.statistics.dto.StatDto;
+import ewm.statistics.service.StatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +18,12 @@ public class StatController {
     }
 
     @PostMapping("/hit")
-    public List<StatCountDto> createHitStatController(@RequestBody StatDto statDto) {
+    public List<StatCountDto> createHitStat(@RequestBody StatDto statDto) {
         return statService.createHitStatService(statDto);
     }
 
     @GetMapping("/stats")
-    public List<StatCountDto> getStatController(@RequestParam(value = "start", required = false) String start,
+    public List<StatCountDto> getStat(@RequestParam(value = "start", required = false) String start,
                                                 @RequestParam(value = "end", required = false) String end,
                                                 @RequestParam(value = "uris", required = false) List<String> uris,
                                                 @RequestParam(value = "unique", defaultValue = "false") boolean unique) {

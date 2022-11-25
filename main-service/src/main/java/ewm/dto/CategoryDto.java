@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = false)
 public class CategoryDto extends EntityDto {
     @JsonProperty("id")
     private Long categoryId;

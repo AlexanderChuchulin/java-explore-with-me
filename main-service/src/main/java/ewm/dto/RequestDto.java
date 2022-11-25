@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = false)
 public class RequestDto extends EntityDto {
     @JsonProperty("id")
     private Long requestId;

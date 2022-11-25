@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = false)
 public class EventDto extends EntityDto {
     @JsonProperty("id")
     @JsonAlias("eventId")
