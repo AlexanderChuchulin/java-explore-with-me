@@ -1,0 +1,5 @@
+package ewm.other;
+
+public enum IdName {
+    GENERAL_ID, CATEGORY_ID, COMPILATION_ID, EVENT_ID, REQUEST_ID, INITIATOR_ID, REQUESTER_ID, USER_ID
+}
