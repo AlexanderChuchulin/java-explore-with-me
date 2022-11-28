@@ -23,7 +23,7 @@ public class CategoryService extends EwmAbstractService<CategoryDto, Category> {
     }
 
     @Override
-    public void validateEntityService(CategoryDto categoryDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
+    public void validateEntity(CategoryDto categoryDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
         StringBuilder excReason = new StringBuilder();
 
         if (categoryDto.getCategoryName() == null || categoryDto.getCategoryName().isBlank()) {

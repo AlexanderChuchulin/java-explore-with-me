@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryMapper extends EntityMapper<CategoryDto, Category> {
     @Override
-    public Category dtoToEntity(CategoryDto categoryDto, Long... params) {
+    public Category dtoToEntity(CategoryDto categoryDto, boolean isUpdate, Long... params) {
         return Category.builder()
                 .categoryId(categoryDto.getCategoryId())
                 .categoryName(categoryDto.getCategoryName())

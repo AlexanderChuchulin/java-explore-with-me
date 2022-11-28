@@ -7,7 +7,7 @@ public abstract class EntityMapper<T extends EntityDto, V extends EwmEntity> {
     /**
      Метод преобразования DTO в сущность по схеме New
      */
-    public abstract V dtoToEntity(T dto, Long... params);
+    public abstract V dtoToEntity(T dto, boolean isUpdate, Long... params);
 
     /**
      Метод преобразования сущности в DTO по обычной схеме

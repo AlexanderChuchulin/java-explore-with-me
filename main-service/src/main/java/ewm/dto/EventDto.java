@@ -1,6 +1,9 @@
 package ewm.dto;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ewm.abstraction.EntityDto;
 import ewm.other.EventStatus;
 import lombok.*;
@@ -26,8 +29,11 @@ public class EventDto extends EntityDto {
     @JsonProperty("createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventCreated = LocalDateTime.now();
+    @JsonProperty("eventDate")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime eventDate;
+    private LocalDateTime eventDateStart;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDateEnd;
     @JsonProperty("state")
     private EventStatus eventStatus;
     @JsonProperty("title")
@@ -41,7 +47,9 @@ public class EventDto extends EntityDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime published;
     private Boolean requestModeration;
-    Long views;
+    private Long views;
+    private String eventRating;
+    private String partOfVoted;
 
     @Override
     public Long getId() {

@@ -2,6 +2,7 @@ package ewm.mapper;
 
 import ewm.abstraction.EntityMapper;
 import ewm.dto.RequestDto;
+import ewm.exception.EntityNotFoundExc;
 import ewm.model.Event;
 import ewm.model.Request;
 import ewm.other.DtoType;
@@ -25,13 +26,15 @@ public class RequestMapper extends EntityMapper<RequestDto, Request> {
     }
 
     @Override
-    public Request dtoToEntity(RequestDto dto, Long... params) {
+    public Request dtoToEntity(RequestDto dto, boolean isUpdate, Long... params) {
         Event event = eventJpaRepository.findById(params[1]).orElseThrow();
 
         return Request.builder()
                 .requestCreated(LocalDateTime.now())
-                .event(event)
-                .requester(userJpaRepository.findById(params[0]).orElseThrow())
+                .event(eventJpaRepository.findById(params[1])
+                        .orElseThrow(() -> new EntityNotFoundExc("Dto to request aborted", "Event not found")))
+                .requester(userJpaRepository.findById(params[0])
+                        .orElseThrow(() -> new EntityNotFoundExc("Dto to request aborted", "Requester not found")))
                 .requestStatus(event.isRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
                 .build();
     }
@@ -44,6 +47,7 @@ public class RequestMapper extends EntityMapper<RequestDto, Request> {
                 .eventId(request.getEvent().getEventId())
                 .requesterId(request.getRequester().getUserId())
                 .requestStatus(request.getRequestStatus())
+                .ratingFromRequester(request.getRatingFromRequester())
                 .build();
     }
 }

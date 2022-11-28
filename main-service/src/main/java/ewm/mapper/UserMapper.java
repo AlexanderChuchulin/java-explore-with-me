@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserMapper extends EntityMapper<UserDto, User> {
 
     @Override
-    public User dtoToEntity(UserDto userDto, Long... params) {
+    public User dtoToEntity(UserDto userDto, boolean isUpdate, Long... params) {
         return User.builder()
                 .userId(userDto.getUserId())
                 .email(userDto.getEmail())

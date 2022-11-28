@@ -39,34 +39,34 @@ public class AdminController {
 
     @PostMapping("/users")
     public UserDto createUser(@RequestBody UserDto userDto) {
-        return userService.createEntityService(userDto, true);
+        return userService.createEntity(userDto, true);
     }
 
     @GetMapping("/users")
     public List<UserDto> getUsers(@RequestParam(value = "ids", required = false) List<Long> ids,
                                             @RequestParam(value = "from", required = false, defaultValue = "0") int from,
                                             @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-        return userService.getEntityService(null, ids, from, size, null);
+        return userService.getEntity(null, ids, from, size, null);
     }
 
     @DeleteMapping("users/{userId}")
     public void deleteUserById(@PathVariable long userId) {
-        userService.deleteEntityByIdService(Map.of(GENERAL_ID, userId));
+        userService.deleteEntityById(Map.of(GENERAL_ID, userId));
     }
 
     @PostMapping("/categories")
     public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
-        return categoryService.createEntityService(categoryDto, true);
+        return categoryService.createEntity(categoryDto, true);
     }
 
     @PatchMapping("/categories")
     public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto) {
-        return categoryService.updateEntityService(new HashMap<>(), categoryDto, true, true);
+        return categoryService.updateEntity(new HashMap<>(), categoryDto, true, true);
     }
 
     @DeleteMapping("/categories/{categoryId}")
     public void deleteCategoryById(@PathVariable long categoryId) {
-        categoryService.deleteEntityByIdService(Map.of(GENERAL_ID, categoryId));
+        categoryService.deleteEntityById(Map.of(GENERAL_ID, categoryId));
     }
 
     @GetMapping("/events")
@@ -77,27 +77,27 @@ public class AdminController {
                                                    @RequestParam(value = "rangeEnd", required = false, defaultValue = "9999-12-31 23:59:59") String rangeEnd,
                                                    @RequestParam(value = "from", required = false, defaultValue = "0") int from,
                                                    @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-        return eventService.getEventsForAdminService(usersIds, states, categoryIds, rangeStart, rangeEnd, from, size);
+        return eventService.getEventsForAdmin(usersIds, states, categoryIds, rangeStart, rangeEnd, from, size);
     }
 
     @PutMapping("/events/{eventId}")
     public EventDto updateEventByAdmin(@PathVariable Long eventId, @RequestBody EventDto eventDto) {
-        return eventService.updateEntityService(Map.of(GENERAL_ID, eventId), eventDto, true, true);
+        return eventService.updateEntity(Map.of(GENERAL_ID, eventId), eventDto, true, true);
     }
 
     @PatchMapping("/events/{eventId}/publish")
     public EventDto publishEvent(@PathVariable long eventId) {
-        return eventService.changeEventStatusService(Map.of(GENERAL_ID, eventId), PUBLISHED, true);
+        return eventService.changeEventStatus(Map.of(GENERAL_ID, eventId), PUBLISHED, true);
     }
 
     @PatchMapping("/events/{eventId}/reject")
     public EventDto cancelEventByAdmin(@PathVariable long eventId) {
-        return eventService.changeEventStatusService(Map.of(GENERAL_ID, eventId), CANCELED, true);
+        return eventService.changeEventStatus(Map.of(GENERAL_ID, eventId), CANCELED, true);
     }
 
     @PostMapping("/compilations")
     public CompilationDto createCompilation(@RequestBody CompilationDto compilationDto) {
-        return compilationService.createEntityService(compilationDto, true);
+        return compilationService.createEntity(compilationDto, true);
     }
 
     @PatchMapping("/compilations/{compId}/pin")
@@ -122,7 +122,7 @@ public class AdminController {
 
     @DeleteMapping("/compilations/{compId}")
     public void deleteCompilation(@PathVariable long compId) {
-        compilationService.deleteEntityByIdService(Map.of(GENERAL_ID, compId));
+        compilationService.deleteEntityById(Map.of(GENERAL_ID, compId));
     }
 
 }

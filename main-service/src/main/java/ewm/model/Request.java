@@ -31,4 +31,6 @@ public class Request extends EwmEntity {
     @Column(name = "request_status", nullable = false)
     @Enumerated(EnumType.STRING)
     RequestStatus requestStatus;
+    @Column(name = "rating_from_requester")
+    private Integer ratingFromRequester;
 }

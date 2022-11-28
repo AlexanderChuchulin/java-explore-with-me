@@ -25,14 +25,16 @@ public class Event extends EwmEntity {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
     Category category;
-    @Column(name = "confirmed_requests", nullable = false)
+    @Column(name = "confirmed_requests")
     private long confirmedRequests;
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "event_created", nullable = false)
     private LocalDateTime eventCreated;
-    @Column(name = "event_date", nullable = false)
+    @Column(name = "event_date_start", nullable = false)
     private LocalDateTime eventDate;
+    @Column(name = "event_date_end", nullable = false)
+    private LocalDateTime eventDateEnd;
     @Column(name = "event_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
@@ -53,5 +55,7 @@ public class Event extends EwmEntity {
     private LocalDateTime published;
     @Column(name = "request_moderation", nullable = false)
     private boolean requestModeration;
-    long views;
+    private long views;
+    private Double eventRating;
+    private Double partOfVoted;
 }

@@ -22,4 +22,5 @@ public class User extends EwmEntity {
     private String email;
     @Column(name = "user_name", nullable = false)
     private String userName;
+    private Double initiatorRating;
 }

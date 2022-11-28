@@ -16,6 +16,7 @@ public class UserDto extends EntityDto {
     private String email;
     @JsonProperty("name")
     private String userName;
+    private String initiatorRating;
 
     @Override
     public Long getId() {

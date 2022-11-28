@@ -39,19 +39,19 @@ public class PublicController {
 
     @GetMapping("/categories/{categoryId}")
     public CategoryDto getCategoryById(@PathVariable long categoryId) {
-        return categoryService.getEntityByIdService(Map.of(GENERAL_ID, categoryId), BASIC, true);
+        return categoryService.getEntityById(Map.of(GENERAL_ID, categoryId), BASIC, true);
     }
 
     @GetMapping("/categories")
     public List<CategoryDto> getCategories(@RequestParam(value = "from", required = false, defaultValue = "0") int from,
                                                      @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-        return categoryService.getEntityService(null, null, from, size, BASIC);
+        return categoryService.getEntity(null, null, from, size, BASIC);
     }
 
     @GetMapping("/events/{eventId}")
     public EventDto getEventById(@PathVariable Long eventId, HttpServletRequest request) {
         statClientService.createHitStatClient(request, true);
-        return eventService.getEntityByIdService(Map.of(GENERAL_ID, eventId), FULL, false);
+        return eventService.getEntityById(Map.of(GENERAL_ID, eventId), FULL, false);
     }
 
     @GetMapping("/events")
@@ -66,18 +66,18 @@ public class PublicController {
                                               @RequestParam(value = "sort", required = false, defaultValue = "EVENT_DATE") String sort,
                                               HttpServletRequest request) {
         statClientService.createHitStatClient(request, false);
-        return eventService.getEventsForPublicService(searchText, categoryIds, isPaid, rangeStart, rangeEnd, isOnlyAvailable, from, size, sort);
+        return eventService.getEventsForPublic(searchText, categoryIds, isPaid, rangeStart, rangeEnd, isOnlyAvailable, from, size, sort);
     }
 
     @GetMapping("/compilations/{compId}")
     public CompilationDto getCompilationById(@PathVariable long compId) {
-        return compilationService.getEntityByIdService(Map.of(GENERAL_ID, compId), BASIC, true);
+        return compilationService.getEntityById(Map.of(GENERAL_ID, compId), BASIC, true);
     }
 
     @GetMapping("/compilations")
     public List<CompilationDto> getCompilations(@RequestParam(value = "pinned", required = false) Boolean pinned,
                                                           @RequestParam(value = "from", required = false, defaultValue = "0") int from,
                                                           @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-        return compilationService.getEntityService(null, null, from, size, BASIC, pinned);
+        return compilationService.getEntity(null, null, from, size, BASIC, pinned);
     }
 }
