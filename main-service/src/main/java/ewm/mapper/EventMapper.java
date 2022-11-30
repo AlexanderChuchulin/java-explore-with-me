@@ -2,6 +2,7 @@ package ewm.mapper;
 
 import ewm.abstraction.EntityMapper;
 import ewm.dto.EventDto;
+import ewm.exception.EntityNotFoundExc;
 import ewm.model.Event;
 import ewm.other.DtoType;
 import ewm.other.EventStatus;
@@ -22,20 +23,22 @@ public class EventMapper extends EntityMapper<EventDto, Event> {
     }
 
     @Override
-    public Event dtoToEntity(EventDto eventDto, Long... params) {
+    public Event dtoToEntity(EventDto eventDto, boolean isUpdate, Long... params) {
         return Event.builder()
                 .eventId(eventDto.getEventId())
                 .annotation(eventDto.getAnnotation())
-                .category(categoryJpaRepository.findById(eventDto.getCategoryId()).orElseThrow())
-                .confirmedRequests(0L)
+                .category(categoryJpaRepository.findById(eventDto.getCategoryId())
+                        .orElseThrow(() -> new EntityNotFoundExc("Dto to event aborted", "Category not found")))
                 .description(eventDto.getDescription())
                 .eventCreated(LocalDateTime.now())
-                .eventDate(eventDto.getEventDate())
+                .eventDate(eventDto.getEventDateStart())
+                .eventDateEnd(eventDto.getEventDateEnd() != null ? eventDto.getEventDateEnd() : eventDto.getEventDateStart().plusDays(1L))
                 .eventLatitude(eventDto.getEventLocationDto() != null ? eventDto.getEventLocationDto().getLat() : null)
                 .eventLongitude(eventDto.getEventLocationDto() != null ? eventDto.getEventLocationDto().getLon() : null)
                 .eventStatus(EventStatus.PENDING)
                 .eventTitle(eventDto.getEventTitle())
-                .initiator(params.length > 0 ? userJpaRepository.findById(params[0]).orElseThrow() : null)
+                .initiator(!isUpdate ? userJpaRepository.findById(params[0])
+                        .orElseThrow(() -> new EntityNotFoundExc("Dto to event aborted", "Initiator not found")) : null)
                 .paid(eventDto.getPaid())
                 .participantLimit(eventDto.getParticipantLimit())
                 .requestModeration(eventDto.getRequestModeration() == null || eventDto.getRequestModeration())
@@ -50,11 +53,14 @@ public class EventMapper extends EntityMapper<EventDto, Event> {
                     .annotation(event.getAnnotation())
                     .categoryDto(new EventDto.CategoryDto(event.getCategory().getCategoryId(), event.getCategory().getCategoryName()))
                     .confirmedRequests(event.getConfirmedRequests())
-                    .eventDate(event.getEventDate())
+                    .eventDateStart(event.getEventDate())
+                    .eventDateEnd(event.getEventDateEnd())
                     .eventTitle(event.getEventTitle())
                     .initiator(new EventDto.UserShortDto(event.getInitiator().getUserId(), event.getInitiator().getUserName()))
                     .paid(event.isPaid())
                     .views(event.getViews())
+                    .eventRating(event.getEventRating() != null ? String.format("%.1f", event.getEventRating()) : null)
+                    .partOfVoted(event.getPartOfVoted() != null ? String.format("%.1f%%", event.getPartOfVoted() * 100) : null)
                     .build();
         }
 
@@ -66,7 +72,8 @@ public class EventMapper extends EntityMapper<EventDto, Event> {
                 .confirmedRequests(event.getConfirmedRequests())
                 .description(event.getDescription())
                 .eventCreated(event.getEventCreated())
-                .eventDate(event.getEventDate())
+                .eventDateStart(event.getEventDate())
+                .eventDateEnd(event.getEventDateEnd())
                 .eventLocationDto(new EventDto.EventLocationDto(event.getEventLatitude(), event.getEventLongitude()))
                 .eventStatus(event.getEventStatus())
                 .eventTitle(event.getEventTitle())
@@ -76,6 +83,8 @@ public class EventMapper extends EntityMapper<EventDto, Event> {
                 .published(event.getPublished())
                 .requestModeration(event.isRequestModeration())
                 .views(event.getViews())
+                .eventRating(event.getEventRating() != null ? String.format("%.1f", event.getEventRating()) : null)
+                .partOfVoted(event.getPartOfVoted() != null ? String.format("%.1f%%", event.getPartOfVoted() * 100) : null)
                 .build();
     }
 }

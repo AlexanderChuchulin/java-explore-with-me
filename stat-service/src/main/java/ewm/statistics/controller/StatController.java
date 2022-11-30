@@ -19,7 +19,7 @@ public class StatController {
 
     @PostMapping("/hit")
     public List<StatCountDto> createHitStat(@RequestBody StatDto statDto) {
-        return statService.createHitStatService(statDto);
+        return statService.createHitStat(statDto);
     }
 
     @GetMapping("/stats")
@@ -27,6 +27,6 @@ public class StatController {
                                                 @RequestParam(value = "end", required = false) String end,
                                                 @RequestParam(value = "uris", required = false) List<String> uris,
                                                 @RequestParam(value = "unique", defaultValue = "false") boolean unique) {
-        return statService.getStatService(start, end, uris, unique);
+        return statService.getStat(start, end, uris, unique);
     }
 }

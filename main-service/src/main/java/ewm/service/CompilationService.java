@@ -38,7 +38,7 @@ public class CompilationService extends EwmAbstractService<CompilationDto, Compi
     public void compilationPinUpdate(long compilationId, boolean isPin) {
         String action = String.format("Admin %s %s by ID %s", isPin ? "pin" : "unpin", name, compilationId);
 
-        entityExistCheckService(Map.of(GENERAL_ID, compilationId), true, action);
+        entityExistCheck(Map.of(GENERAL_ID, compilationId), true, action);
         Compilation updatingCompilation = compilationJpaRepository.getReferenceById(compilationId);
 
         updatingCompilation.setPinned(isPin);
@@ -47,9 +47,9 @@ public class CompilationService extends EwmAbstractService<CompilationDto, Compi
     }
 
     public void compilationEventUpdate(long compilationId, long eventId, boolean isAdd) {
-        String action = String.format("Admin %s event with id %s to %s by ID %s", isAdd ? "add" : "delete", eventId, name, compilationId);
+        String action = String.format("Admin %s event with id %s to %s by ID %s", isAdd ? "add to" : "delete", eventId, name, compilationId);
 
-        entityExistCheckService(Map.of(GENERAL_ID, compilationId), true, action);
+        entityExistCheck(Map.of(GENERAL_ID, compilationId), true, action);
         Compilation updatingCompilation = compilationJpaRepository.getReferenceById(compilationId);
 
         if (isAdd) {
@@ -58,7 +58,7 @@ public class CompilationService extends EwmAbstractService<CompilationDto, Compi
             }
             updatingCompilation.getEventsList().add(eventJpaRepository.getReferenceById(eventId));
         } else {
-            entityExistCheckService(Map.of(GENERAL_ID, compilationId, EVENT_ID, eventId), true, action);
+            entityExistCheck(Map.of(GENERAL_ID, compilationId, EVENT_ID, eventId), true, action);
             updatingCompilation.getEventsList().remove(eventJpaRepository.getReferenceById(eventId));
         }
         log.info(action);
@@ -66,7 +66,7 @@ public class CompilationService extends EwmAbstractService<CompilationDto, Compi
     }
 
     @Override
-    public void validateEntityService(CompilationDto compilationDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
+    public void validateEntity(CompilationDto compilationDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
         StringBuilder excReason = new StringBuilder();
         List<Long> wrongEventIds = new ArrayList<>();
 

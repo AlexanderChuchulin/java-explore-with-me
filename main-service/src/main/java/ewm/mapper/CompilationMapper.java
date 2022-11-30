@@ -22,7 +22,7 @@ public class CompilationMapper extends EntityMapper<CompilationDto, Compilation>
     }
 
     @Override
-    public Compilation dtoToEntity(CompilationDto compilationDto, Long... params) {
+    public Compilation dtoToEntity(CompilationDto compilationDto, boolean isUpdate, Long... params) {
         return Compilation.builder()
                 .compilationId(compilationDto.getCompilationId())
                 .eventsList(eventJpaRepository.findAllById(compilationDto.getEventIds()))

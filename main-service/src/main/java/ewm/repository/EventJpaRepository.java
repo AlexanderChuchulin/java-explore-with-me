@@ -51,14 +51,23 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
             "and (:searchText is null or (lower(event.annotation) like lower(concat('%', :searchText, '%')) " +
             "or (event.description) like lower(concat('%', :searchText, '%'))))" +
             "and (:categoryIds is null or event.category.categoryId in :categoryIds) " +
-            "and (:isPaid is null or event.paid = :isPaid ) " +
+            "and (:isPaid is null or event.paid = :isPaid) " +
             "and (event.eventDate > :rangeStart and event.eventDate < :rangeEnd)" +
-            "and (:isOnlyAvailable is false or (event.participantLimit = 0 or event.confirmedRequests < event.participantLimit))")
+            "and (:isOnlyAvailable is false or (event.participantLimit = 0 or event.confirmedRequests < event.participantLimit))" +
+            "order by case when :sortByRate is true then event.initiator.initiatorRating else false end desc, " +
+            "case when :sortByRate is true then event.eventRating else false end desc")
     List<Event> findAllEventsForPublic(String searchText, List<Long> categoryIds, Boolean isPaid, LocalDateTime rangeStart,
-                                       LocalDateTime rangeEnd, Boolean isOnlyAvailable, Pageable pageable);
+                                       LocalDateTime rangeEnd, Boolean isOnlyAvailable, boolean sortByRate, Pageable pageable);
 
     @Transactional
     @Modifying
     @Query("update Event event set event.views = :hits where event.eventId = :eventId")
-    void setViewsForEvent(Long eventId, Long hits);
+    void setViews(long eventId, Long hits);
+
+    @Transactional
+    @Modifying
+    @Query("update Event event set event.confirmedRequests = event.confirmedRequests + :changeConfirmed where event.eventId = :eventId")
+    void setConfirmedRequests(long eventId, long changeConfirmed);
+
+    List<Event> findAllByInitiatorUserIdAndEventRatingNotNull(long ownerId);
 }

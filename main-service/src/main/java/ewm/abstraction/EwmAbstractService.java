@@ -23,29 +23,29 @@ public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntit
     protected EntityMapper<T, V> mapper;
 
     @Override
-    public T createEntityService(T dto, boolean isHaveDto, Long... params) {
+    public T createEntity(T dto, boolean isHaveDto, Long... params) {
         String conclusion = String.format("%s not created.", name);
 
         if (isHaveDto) {
             checkDto(dto, conclusion);
         }
 
-        validateEntityService(dto, false, false, conclusion, params);
+        validateEntity(dto, false, false, conclusion, params);
         log.info("Create {}", name);
-        return mapper.entityToDto(jpaRepository.save(mapper.dtoToEntity(dto, params)));
+        return mapper.entityToDto(jpaRepository.save(mapper.dtoToEntity(dto, false, params)));
     }
 
     @Override
-    public T getEntityByIdService(Map<IdName, Long> entityIdMap, DtoType dtoType, boolean isAdmin) {
+    public T getEntityById(Map<IdName, Long> entityIdMap, DtoType dtoType, boolean isAdmin) {
         String action = String.format("%s get %s by ID %s", isAdmin ? "Admin" : "User", name, entityIdMap.get(GENERAL_ID));
 
-        entityExistCheckService(entityIdMap, isAdmin, action);
+        entityExistCheck(entityIdMap, isAdmin, action);
         log.info(action);
         return mapper.entityToDto(jpaRepository.getReferenceById(entityIdMap.get(GENERAL_ID)));
     }
 
     @Override
-    public List<T> getEntityService(Long ownerId, List<Long> entityIds, int from, int size, DtoType dtoType, Boolean... booleanParam) {
+    public List<T> getEntity(Long ownerId, List<Long> entityIds, int from, int size, DtoType dtoType, Boolean... booleanParam) {
         if (entityIds == null | (ownerId == null & entityIds == null)) {
             log.info("Get {}s from {} size {}", name, from, size);
         } else {
@@ -57,8 +57,7 @@ public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntit
     }
 
     @Override
-    public T updateEntityService(Map<IdName, Long> entityIdMap, T dto, boolean isHaveDto, boolean isAdmin) {
-        String action = String.format("%s update %s by ID %s", isAdmin ? "Admin" : "User", name, entityIdMap.get(GENERAL_ID));
+    public T updateEntity(Map<IdName, Long> entityIdMap, T dto, boolean isHaveDto, boolean isAdmin) {
         String conclusion = String.format("%s not updated", name);
 
         if (isHaveDto) {
@@ -69,23 +68,25 @@ public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntit
             entityIdMap.put(GENERAL_ID, dto.getId());
         }
 
-        entityExistCheckService(entityIdMap, isAdmin, action);
+        String action = String.format("%s update %s by ID %s", isAdmin ? "Admin" : "User", name, entityIdMap.get(GENERAL_ID));
 
-        V updatingEntity = mapper.dtoToEntity(dto);
+        entityExistCheck(entityIdMap, isAdmin, action);
+
+        V updatingEntity = mapper.dtoToEntity(dto, true);
 
         BeanUtils.copyProperties(jpaRepository
                 .getReferenceById(entityIdMap.get(GENERAL_ID)), updatingEntity, OtherUtils.getNotNullPropertyNames(updatingEntity));
 
-        validateEntityService(mapper.entityToDto(updatingEntity), true, true, conclusion);
+        validateEntity(mapper.entityToDto(updatingEntity), true, true, conclusion);
         log.info(action);
         return mapper.entityToDto(jpaRepository.save(updatingEntity));
     }
 
     @Override
-    public void deleteEntityByIdService(Map<IdName, Long> entityIdMap) {
+    public void deleteEntityById(Map<IdName, Long> entityIdMap) {
         String action = String.format("Delete %s by ID %s", name, entityIdMap.get(GENERAL_ID));
 
-        entityExistCheckService(entityIdMap, false, action);
+        entityExistCheck(entityIdMap, false, action);
         jpaRepository.deleteById(entityIdMap.get(GENERAL_ID));
         log.info(action);
     }
@@ -93,7 +94,7 @@ public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntit
     /**
      * Метод проверяет существование сущности по id
      */
-    public void entityExistCheckService(Map<IdName, Long> entityIdMap, boolean isAdmin, String action) {
+    public void entityExistCheck(Map<IdName, Long> entityIdMap, boolean isAdmin, String action) {
         String message = String.format("%s aborted. ", action);
         String reason = String.format("Search %s error.", name);
 
@@ -128,6 +129,5 @@ public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntit
     /**
      * Метод проводит валидацию входного Dto сущности
      */
-    public abstract void validateEntityService(T entityDto, boolean isHaveDto, boolean isAdmin,
-                                               String conclusion, Long... params);
+    public abstract void validateEntity(T entityDto, boolean isHaveDto, boolean isAdmin, String conclusion, Long... params);
 }

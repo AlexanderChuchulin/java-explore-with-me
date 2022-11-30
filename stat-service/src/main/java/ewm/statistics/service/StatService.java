@@ -26,13 +26,13 @@ public class StatService {
         this.statMapper = statMapper;
     }
 
-    public List<StatCountDto> createHitStatService(StatDto statDto) {
+    public List<StatCountDto> createHitStat(StatDto statDto) {
         statJpaRepository.save(statMapper.dtoToStatModel(statDto));
         log.info("Create hit stats");
-        return getStatService(null, null, List.of(statDto.getUri()), true);
+        return getStat(null, null, List.of(statDto.getUri()), true);
     }
 
-    public List<StatCountDto> getStatService(String start, String end, List<String> uris, Boolean uniqueIp) {
+    public List<StatCountDto> getStat(String start, String end, List<String> uris, Boolean uniqueIp) {
         if (start == null || start.isBlank()) {
             start = LocalDateTime.now().minusDays(1L).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }

@@ -46,7 +46,7 @@ public class StatClientService {
 
         if (isNeedUpdate) {
             Arrays.stream(Objects.requireNonNull(statServerResponse.getBody()))
-                    .forEach(stat -> eventJpaRepository.setViewsForEvent(uriToEventId(stat.getUri()), stat.getHits()));
+                    .forEach(stat -> eventJpaRepository.setViews(uriToEventId(stat.getUri()), stat.getHits()));
         }
     }
 

@@ -35,8 +35,8 @@ public class EventService extends EwmAbstractService<EventDto, Event> {
         jpaRepository = eventJpaRepository;
     }
 
-    public List<EventDto> getEventsForAdminService(List<Long> userIds, List<EventStatus> eventStatuses, List<Long> categoryIds,
-                                                   String rangeStart, String rangeEnd, int from, int size) {
+    public List<EventDto> getEventsForAdmin(List<Long> userIds, List<EventStatus> eventStatuses, List<Long> categoryIds,
+                                            String rangeStart, String rangeEnd, int from, int size) {
 
         log.info("Get events for admin with userIds {}, eventStatuses {}, categoryIds {}, rangeStart {}, rangeEnd {}, from {}, size {}",
                 userIds, eventStatuses, categoryIds, rangeStart, rangeEnd, from, size);
@@ -47,10 +47,15 @@ public class EventService extends EwmAbstractService<EventDto, Event> {
                 .collect(Collectors.toList());
     }
 
-    public List<EventDto> getEventsForPublicService(String searchText, List<Long> categoryIds, Boolean isPaid, String rangeStart,
-                                                    String rangeEnd, Boolean isOnlyAvailable, int from, int size, String sortParam) {
+    public List<EventDto> getEventsForPublic(String searchText, List<Long> categoryIds, Boolean isPaid, String rangeStart,
+                                             String rangeEnd, Boolean isOnlyAvailable, int from, int size, String sortParam) {
+        boolean sortByRate = false;
         if (rangeStart == null || rangeStart.isBlank()) {
             rangeStart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+
+        if (sortParam.equalsIgnoreCase("INITIATOR_RATING")) {
+            sortByRate = true;
         }
 
         log.info("Get events for public with searchText {}, categoryIds {}, isPaid {}, rangeStart {}, rangeEnd {}, " +
@@ -58,16 +63,16 @@ public class EventService extends EwmAbstractService<EventDto, Event> {
                 isOnlyAvailable, from, size, sortParam);
 
         return eventJpaRepository.findAllEventsForPublic(searchText, categoryIds, isPaid, getCorrectDateTime(rangeStart),
-                        getCorrectDateTime(rangeEnd), isOnlyAvailable, OtherUtils.pageableCreate(from, size, sortParam)).stream()
+                        getCorrectDateTime(rangeEnd), isOnlyAvailable, sortByRate, OtherUtils.pageableCreate(from, size, sortParam)).stream()
                 .map(entity -> mapper.entityToDto(entity, DtoType.SHORT))
                 .collect(Collectors.toList());
     }
 
-    public EventDto changeEventStatusService(Map<IdName, Long> entityIdMap, EventStatus changeStatus, boolean isAdmin) {
+    public EventDto changeEventStatus(Map<IdName, Long> entityIdMap, EventStatus changeStatus, boolean isAdmin) {
         String userType = isAdmin ? "Admin" : "Initiator";
         String action = String.format("%s %s by ID %s", changeStatus.name(), name, entityIdMap.get(GENERAL_ID));
 
-        entityExistCheckService(entityIdMap, isAdmin, userType + action);
+        entityExistCheck(entityIdMap, isAdmin, userType + action);
 
         Event updatingEvent = jpaRepository.getReferenceById(entityIdMap.get(GENERAL_ID));
 
@@ -130,7 +135,7 @@ public class EventService extends EwmAbstractService<EventDto, Event> {
     }
 
     @Override
-    public void validateEntityService(EventDto eventDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
+    public void validateEntity(EventDto eventDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
         StringBuilder excReason = new StringBuilder();
 
         if (eventDto.getAnnotation() == null || eventDto.getAnnotation().length() < 20 || eventDto.getAnnotation().length() > 2000) {
@@ -142,8 +147,11 @@ public class EventService extends EwmAbstractService<EventDto, Event> {
         if (eventDto.getDescription() == null || eventDto.getDescription().length() < 20 || eventDto.getDescription().length() > 7000) {
             excReason.append("Description length must be more than 20 and less than 7000 symbols. ");
         }
-        if (eventDto.getEventDate().isBefore(eventDto.getEventCreated().plusHours(2L))) {
-            excReason.append("Event date must be 2 hours later than the creation date. ");
+        if (eventDto.getEventDateStart() == null || eventDto.getEventDateStart().isBefore(eventDto.getEventCreated().plusHours(2L))) {
+            excReason.append("Event date must be set and must be 2 hours later than the creation date. ");
+        }
+        if (eventDto.getEventDateEnd() != null && eventDto.getEventDateEnd().isBefore(eventDto.getEventDateStart().plusHours(1L))) {
+            excReason.append("Event date end must be later than event date start and duration must not be less than 1 hour. ");
         }
         if (eventDto.getEventLocationDto() == null || eventDto.getEventLocationDto().getLat() == null
                 || eventDto.getEventLocationDto().getLon() == null) {

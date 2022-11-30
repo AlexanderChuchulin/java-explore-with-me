@@ -26,6 +26,8 @@ public class RequestDto extends EntityDto {
     private Long requesterId;
     @JsonProperty("status")
     RequestStatus requestStatus;
+    @JsonProperty("rating")
+    private Integer ratingFromRequester;
 
     @Override
     public Long getId() {

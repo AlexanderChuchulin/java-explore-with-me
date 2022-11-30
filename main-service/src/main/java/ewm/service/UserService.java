@@ -27,7 +27,7 @@ public class UserService extends EwmAbstractService<UserDto, User> {
     }
 
     @Override
-    public void validateEntityService(UserDto userDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
+    public void validateEntity(UserDto userDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
         StringBuilder excReason = new StringBuilder();
 
         if (userDto.getUserName() == null || userDto.getUserName().isBlank()) {
