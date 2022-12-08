@@ -138,6 +138,9 @@ public class EventService extends EwmAbstractService<EventDto, Event> {
     public void validateEntity(EventDto eventDto, boolean isUpdate, boolean isAdmin, String conclusion, Long... params) {
         StringBuilder excReason = new StringBuilder();
 
+        if (!isUpdate) {
+            eventDto.setEventCreated(LocalDateTime.now());
+        }
         if (eventDto.getAnnotation() == null || eventDto.getAnnotation().length() < 20 || eventDto.getAnnotation().length() > 2000) {
             excReason.append("Annotation length must be more than 20 and less than 2000 symbols. ");
         }

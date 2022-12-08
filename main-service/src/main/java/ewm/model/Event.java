@@ -26,7 +26,7 @@ public class Event extends EwmEntity {
     @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
     Category category;
     @Column(name = "confirmed_requests")
-    private long confirmedRequests;
+    private Long confirmedRequests;
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "event_created", nullable = false)
@@ -48,14 +48,14 @@ public class Event extends EwmEntity {
     @Column(name = "location_longitude", nullable = false)
     private Double eventLongitude;
     @Column(name = "paid", nullable = false)
-    private boolean paid;
+    private Boolean paid;
     @Column(name = "participant_limit", nullable = false)
-    private int participantLimit;
+    private Integer participantLimit;
     @Column(name = "published")
     private LocalDateTime published;
     @Column(name = "request_moderation", nullable = false)
-    private boolean requestModeration;
-    private long views;
+    private Boolean requestModeration;
+    private Long views;
     private Double eventRating;
     private Double partOfVoted;
 }

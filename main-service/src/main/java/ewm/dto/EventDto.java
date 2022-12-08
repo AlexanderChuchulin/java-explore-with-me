@@ -28,7 +28,7 @@ public class EventDto extends EntityDto {
     private String description;
     @JsonProperty("createdOn")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime eventCreated = LocalDateTime.now();
+    private LocalDateTime eventCreated;
     @JsonProperty("eventDate")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDateStart;
@@ -79,12 +79,13 @@ public class EventDto extends EntityDto {
         private Double lon;
     }
 
-    @JsonInclude
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter
     @AllArgsConstructor
     @ToString
     public static class UserShortDto {
         private long id;
         private String name;
+        private String initiatorRating;
     }
 }

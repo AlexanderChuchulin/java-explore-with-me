@@ -32,17 +32,11 @@ public class StatService {
         return getStat(null, null, List.of(statDto.getUri()), true);
     }
 
-    public List<StatCountDto> getStat(String start, String end, List<String> uris, Boolean uniqueIp) {
-        if (start == null || start.isBlank()) {
-            start = LocalDateTime.now().minusDays(1L).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        }
-        if (end == null || end.isBlank()) {
-            end = getCorrectDateTime(start).plusDays(1L).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        }
-
+    public List<StatCountDto> getStat(String start, String end, List<String> uris, boolean uniqueIp) {
         log.info("Return stats by start {}, end {}, uris {}, uniqueIp {}", start, end, uris, uniqueIp);
         if (uniqueIp) {
-            return statJpaRepository.findStatsByParamsAndUniqueIp(getCorrectDateTime(start), getCorrectDateTime(end), uris);
+            return statJpaRepository.findStatsByParamsAndUniqueIp(start == null || start.isBlank() ? null : getCorrectDateTime(start),
+                    end == null || end.isBlank() ? null : getCorrectDateTime(end), uris);
         } else {
             return statJpaRepository.findStatsByParams(getCorrectDateTime(start), getCorrectDateTime(end), uris);
         }

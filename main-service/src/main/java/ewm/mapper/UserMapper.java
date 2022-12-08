@@ -24,6 +24,7 @@ public class UserMapper extends EntityMapper<UserDto, User> {
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .userName(user.getUserName())
+                .initiatorRating(user.getInitiatorRating() != null ? String.format("%.2f", user.getInitiatorRating()) : null)
                 .build();
     }
 }
