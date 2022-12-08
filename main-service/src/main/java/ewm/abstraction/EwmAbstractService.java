@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ewm.other.IdName.GENERAL_ID;
+import static ewm.other.IdName.INITIATOR_ID;
 
 @Slf4j
 public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntity> implements EwmService<T> {
@@ -72,14 +73,13 @@ public abstract class EwmAbstractService<T extends EntityDto, V extends EwmEntit
 
         entityExistCheck(entityIdMap, isAdmin, action);
 
-        V updatingEntity = mapper.dtoToEntity(dto, true);
+        BeanUtils.copyProperties(mapper.entityToDto(jpaRepository
+                .getReferenceById(entityIdMap.get(GENERAL_ID))), dto, OtherUtils.getNotNullPropertyNames(dto));
 
-        BeanUtils.copyProperties(jpaRepository
-                .getReferenceById(entityIdMap.get(GENERAL_ID)), updatingEntity, OtherUtils.getNotNullPropertyNames(updatingEntity));
-
-        validateEntity(mapper.entityToDto(updatingEntity), true, true, conclusion);
+        validateEntity(dto, true, isAdmin, conclusion);
         log.info(action);
-        return mapper.entityToDto(jpaRepository.save(updatingEntity));
+
+        return mapper.entityToDto(jpaRepository.save(mapper.dtoToEntity(dto, true, entityIdMap.get(INITIATOR_ID))));
     }
 
     @Override

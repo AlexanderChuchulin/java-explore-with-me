@@ -35,7 +35,7 @@ public class RequestMapper extends EntityMapper<RequestDto, Request> {
                         .orElseThrow(() -> new EntityNotFoundExc("Dto to request aborted", "Event not found")))
                 .requester(userJpaRepository.findById(params[0])
                         .orElseThrow(() -> new EntityNotFoundExc("Dto to request aborted", "Requester not found")))
-                .requestStatus(event.isRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                .requestStatus(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
                 .build();
     }
 

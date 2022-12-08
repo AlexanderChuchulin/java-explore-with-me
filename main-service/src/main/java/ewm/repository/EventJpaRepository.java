@@ -54,8 +54,9 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
             "and (:isPaid is null or event.paid = :isPaid) " +
             "and (event.eventDate > :rangeStart and event.eventDate < :rangeEnd)" +
             "and (:isOnlyAvailable is false or (event.participantLimit = 0 or event.confirmedRequests < event.participantLimit))" +
-            "order by case when :sortByRate is true then event.initiator.initiatorRating else false end desc, " +
-            "case when :sortByRate is true then event.eventRating else false end desc")
+            "order by case when :sortByRate is true then event.initiator.initiatorRating else 0 end desc nulls last, " +
+            "case when :sortByRate is true then event.eventRating else 0 end desc nulls last, " +
+            "case when :sortByRate is true then event.eventDate else '1970-01-01' end asc")
     List<Event> findAllEventsForPublic(String searchText, List<Long> categoryIds, Boolean isPaid, LocalDateTime rangeStart,
                                        LocalDateTime rangeEnd, Boolean isOnlyAvailable, boolean sortByRate, Pageable pageable);
 

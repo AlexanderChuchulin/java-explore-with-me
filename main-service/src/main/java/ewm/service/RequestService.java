@@ -52,7 +52,7 @@ public class RequestService extends EwmAbstractService<RequestDto, Request> {
 
         validateEntity(null, false, false, conclusion, userId, eventId);
 
-        if (!eventJpaRepository.getReferenceById(eventId).isRequestModeration()) {
+        if (!eventJpaRepository.getReferenceById(eventId).getRequestModeration()) {
             eventJpaRepository.setConfirmedRequests(eventId, 1L);
         }
         log.info("Create {}", name);
@@ -112,7 +112,6 @@ public class RequestService extends EwmAbstractService<RequestDto, Request> {
             throw new ValidationExc(action + " aborted", excReason.toString());
         }
 
-        //requestJpaRepository.setRatingFromRequester(updatingRequest.getEvent().getEventId(), ratingFromRequester);
         updatingRequest.setRatingFromRequester(ratingFromRequester);
         requestJpaRepository.save(updatingRequest);
 
@@ -134,7 +133,6 @@ public class RequestService extends EwmAbstractService<RequestDto, Request> {
         log.info("Set average event rating {} from requests ratings, part of voted {}  for event ID {}", avgEventRating, partOfVoted, eventId);
 
         List<Event> allEventsByOneInitiator = eventJpaRepository.findAllByInitiatorUserIdAndEventRatingNotNull(initiatorId);
-
         double sumEventRatingWithWeight = 0;
         double sumEventWeight = 0;
 
@@ -172,7 +170,8 @@ public class RequestService extends EwmAbstractService<RequestDto, Request> {
         if (event.getEventStatus() != EventStatus.PUBLISHED) {
             excReason.append("Event status must be published. ");
         }
-        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() == event.getParticipantLimit()) {
+        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() != null
+                && event.getConfirmedRequests().longValue() == event.getParticipantLimit()) {
             excReason.append("All seats for this event are full. ");
         }
 

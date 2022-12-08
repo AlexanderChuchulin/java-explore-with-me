@@ -1,11 +1,12 @@
 package ewm.client;
 
 import ewm.repository.EventJpaRepository;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,7 +14,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Service
 public class StatClientService {
@@ -32,7 +34,6 @@ public class StatClientService {
                 .build();
     }
 
-    @SneakyThrows
     public void createHitStatClient(HttpServletRequest request, boolean isNeedUpdate) {
         StatHitDto statHitDto = StatHitDto.builder()
                 .app("ewm-main-service")
@@ -43,6 +44,8 @@ public class StatClientService {
 
         ResponseEntity<StatCountDto[]> statServerResponse = restTemplate.exchange(hitStatUri, HttpMethod.POST,
                 new HttpEntity<>(statHitDto), StatCountDto[].class);
+
+        System.out.println("statServerResponse is = " + Arrays.toString(statServerResponse.getBody()));
 
         if (isNeedUpdate) {
             Arrays.stream(Objects.requireNonNull(statServerResponse.getBody()))

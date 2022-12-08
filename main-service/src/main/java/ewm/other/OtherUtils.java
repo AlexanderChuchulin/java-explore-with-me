@@ -44,7 +44,8 @@ public class OtherUtils {
             if (sortParam[0].equalsIgnoreCase("EVENT_DATE")) {
                 return PageRequest.of(pageNumber, size, Sort.by("eventDate").ascending());
             } else if (sortParam[0].equalsIgnoreCase("VIEWS")) {
-                return PageRequest.of(pageNumber, size, Sort.by("views").descending());
+                return PageRequest.of(pageNumber, size,
+                        Sort.by("views").descending().and(Sort.by("eventDate").ascending()));
             } else if (sortParam[0].equalsIgnoreCase("INITIATOR_RATING")) {
                 return PageRequest.of(pageNumber, size);
             }
