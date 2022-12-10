@@ -4,6 +4,7 @@ import ewm.abstraction.EwmJpaRepository;
 import ewm.model.Compilation;
 import ewm.other.IdName;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -28,6 +29,7 @@ public interface CompilationJpaRepository extends EwmJpaRepository<Compilation> 
         return findAllWithPinned(booleanParam[0], pageable);
     }
 
+    @EntityGraph(attributePaths = {"eventsList", "eventsList.category", "eventsList.initiator"})
     @Query("select compilation from Compilation compilation where (:isPinned is null or compilation.pinned in :isPinned)")
     List<Compilation> findAllWithPinned(Boolean isPinned, Pageable pageable);
 

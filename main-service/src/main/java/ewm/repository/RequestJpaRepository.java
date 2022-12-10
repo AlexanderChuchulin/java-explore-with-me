@@ -5,6 +5,7 @@ import ewm.model.Request;
 import ewm.other.IdName;
 import ewm.other.RequestStatus;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -28,8 +29,10 @@ public interface RequestJpaRepository extends EwmJpaRepository<Request> {
                 : findAllByRequesterUserId(userId, pageable);
     }
 
+    @EntityGraph(attributePaths = {"event"})
     List<Request> findAllByRequesterUserId(Long ownerId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"event"})
     List<Request> findAllByEventInitiatorUserIdAndEventEventId(Long initiatorId, Long eventId, Pageable pageable);
 
     boolean existsByRequesterUserIdAndRequestId(Long requesterId, Long requestId);
