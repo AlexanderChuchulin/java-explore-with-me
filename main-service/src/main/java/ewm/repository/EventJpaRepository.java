@@ -5,6 +5,7 @@ import ewm.model.Event;
 import ewm.other.IdName;
 import ewm.other.EventStatus;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -38,8 +39,10 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
 
     boolean existsByEventIdAndPublishedNotNull(Long eventId);
 
+    @EntityGraph(attributePaths = {"category", "initiator"})
     List<Event> findAllByInitiatorUserId(Long ownerId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"category", "initiator"})
     @Query("select event from Event event where (:usersIds is null or event.initiator.userId in :usersIds) " +
             "and (:eventStatuses is null or event.eventStatus in :eventStatuses) " +
             "and (:categoryIds is null or event.category.categoryId in :categoryIds) " +
@@ -47,6 +50,7 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
     List<Event> findAllEventsForAdmin(List<Long> usersIds, List<EventStatus> eventStatuses, List<Long> categoryIds,
                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"category", "initiator"})
     @Query("select event from Event event where (event.eventStatus = 'PUBLISHED') " +
             "and (:searchText is null or (lower(event.annotation) like lower(concat('%', :searchText, '%')) " +
             "or (event.description) like lower(concat('%', :searchText, '%'))))" +
@@ -70,5 +74,6 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
     @Query("update Event event set event.confirmedRequests = event.confirmedRequests + :changeConfirmed where event.eventId = :eventId")
     void setConfirmedRequests(long eventId, long changeConfirmed);
 
+    @EntityGraph(attributePaths = {"category", "initiator"})
     List<Event> findAllByInitiatorUserIdAndEventRatingNotNull(long ownerId);
 }
