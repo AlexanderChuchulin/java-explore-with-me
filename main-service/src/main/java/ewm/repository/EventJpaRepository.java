@@ -43,9 +43,9 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
     List<Event> findAllByInitiatorUserId(Long ownerId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"category", "initiator"})
-    @Query("select event from Event event where (:usersIds is null or event.initiator.userId in :usersIds) " +
-            "and (:eventStatuses is null or event.eventStatus in :eventStatuses) " +
-            "and (:categoryIds is null or event.category.categoryId in :categoryIds) " +
+    @Query("select event from Event event where ((:usersIds) is null or event.initiator.userId in :usersIds) " +
+            "and ((:eventStatuses) is null or event.eventStatus in :eventStatuses) " +
+            "and ((:categoryIds) is null or event.category.categoryId in :categoryIds) " +
             "and (event.eventDate > :rangeStart and event.eventDate < :rangeEnd)")
     List<Event> findAllEventsForAdmin(List<Long> usersIds, List<EventStatus> eventStatuses, List<Long> categoryIds,
                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
@@ -54,7 +54,7 @@ public interface EventJpaRepository extends EwmJpaRepository<Event> {
     @Query("select event from Event event where (event.eventStatus = 'PUBLISHED') " +
             "and (:searchText is null or (lower(event.annotation) like lower(concat('%', :searchText, '%')) " +
             "or (event.description) like lower(concat('%', :searchText, '%'))))" +
-            "and (:categoryIds is null or event.category.categoryId in :categoryIds) " +
+            "and ((:categoryIds) is null or event.category.categoryId in :categoryIds) " +
             "and (:isPaid is null or event.paid = :isPaid) " +
             "and (event.eventDate > :rangeStart and event.eventDate < :rangeEnd)" +
             "and (:isOnlyAvailable is false or (event.participantLimit = 0 or event.confirmedRequests < event.participantLimit))" +

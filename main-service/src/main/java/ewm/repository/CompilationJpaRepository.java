@@ -30,7 +30,7 @@ public interface CompilationJpaRepository extends EwmJpaRepository<Compilation> 
     }
 
     @EntityGraph(attributePaths = {"eventsList", "eventsList.category", "eventsList.initiator"})
-    @Query("select compilation from Compilation compilation where (:isPinned is null or compilation.pinned in :isPinned)")
+    @Query("select compilation from Compilation compilation where ((:isPinned) is null or compilation.pinned in :isPinned)")
     List<Compilation> findAllWithPinned(Boolean isPinned, Pageable pageable);
 
     @Query("select case when count(compilation) > 0 then true else false end from Compilation compilation join " +
